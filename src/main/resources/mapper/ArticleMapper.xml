@@ -3,6 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wjc.dao.ArticleMapper">
     <update id="updateArticleWithId" parameterType="com.wjc.model.domain.Article">
+/*TODO*/
         update t_article
         <set>
             <if test="title != null">
@@ -20,12 +21,12 @@
             <if test="categories != null">
                 categories = #{categories},
             </if>
-            <!--<if test="hits != null">
+            <if test="hits != null">
                 hits = #{hits},
             </if>
             <if test="commentsNum != null">
                 comments_num = #{commentsNum},
-            </if>-->
+            </if>
             <if test="allowComment != null">
                 allow_comment = #{allowComment},
             </if>

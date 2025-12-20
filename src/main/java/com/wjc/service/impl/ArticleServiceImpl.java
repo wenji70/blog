@@ -2,6 +2,7 @@ package com.wjc.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.vdurmont.emoji.EmojiParser;
 import com.wjc.dao.ArticleMapper;
 import com.wjc.dao.CommentMapper;
 import com.wjc.dao.StatisticMapper;
@@ -65,6 +66,8 @@ public class ArticleServiceImpl implements IArticleService {
     @Operation(summary = "发布文章")
     @Override
     public void publish(Article article) {
+        // 去除表情
+        article.setContent(EmojiParser.parseToAliases(article.getContent()));
         // 设置文章创建时间
         article.setCreated(new Date());
         // 插入文章
@@ -117,4 +120,5 @@ public class ArticleServiceImpl implements IArticleService {
         }
         return articlelist;
     }
+
 }

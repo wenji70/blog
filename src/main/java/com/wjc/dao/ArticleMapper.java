@@ -33,7 +33,5 @@ public interface ArticleMapper {
     // 站点服务统计，统计文章数量
     @Select("SELECT COUNT(1) FROM t_article")
     public Integer countArticle();
-    // 站点服务统计，统计文章数量
-    @Select("SELECT COUNT(1) FROM t_article")
-    public Integer countArticle();
+
 }

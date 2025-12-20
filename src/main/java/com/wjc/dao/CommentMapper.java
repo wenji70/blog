@@ -30,11 +30,4 @@ public interface CommentMapper {
     // 站点服务统计，统计评论数量
     @Select("SELECT COUNT(1) FROM t_comment")
     public Integer countComment();
-    // 后台查询最新几条评论
-    @Select("SELECT * FROM t_comment ORDER BY id DESC")
-    public List<Comment> selectNewComment();
-    // 站点服务统计，统计评论数量
-    @Select("SELECT COUNT(1) FROM t_comment")
-    public Integer countComment();
-
 }

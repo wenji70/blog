@@ -14,4 +14,5 @@ public interface ISiteService {
     public List<Article> recentArticles(int count);
     // 获取后台统计数据
     public StaticticsBo getStatistics();
+
 }
