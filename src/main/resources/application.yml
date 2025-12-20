@@ -5,6 +5,8 @@ spring:
     active: jdbc,redis
   datasource:
     url: jdbc:mysql://192.168.159.129:3306/bolg_system?useSSL=false&serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true
+#    闲杂人等连接这个
+#    url: jdbc:mysql://192.168.218.232:3306/bolg_system?useSSL=false&serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true
     username: root
     password: 12345678
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -31,6 +33,4 @@ mybatis:
     map-underscore-to-camel-case: true
 COOKIE:
   VALIDITY: 1800
-#    url: jdbc:mysql://localhost:3306/bolg_system?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8&connectionCollation=utf8mb4_unicode_ci
-#192.168.218.232 ipv4
-# ping 192.168.159.129 3306
+
