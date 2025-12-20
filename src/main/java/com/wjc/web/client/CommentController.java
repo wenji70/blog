@@ -26,7 +26,7 @@ public class CommentController {
     private static final Logger logger =
             LoggerFactory.getLogger(CommentController.class);
     @Autowired
-    private ICommentService commentServcie;
+    private ICommentService commentService;
 
     // 发表评论操作
     @PostMapping(value = "/comments/publish")
@@ -48,7 +48,7 @@ public class CommentController {
         comments.setAuthor(username);
         comments.setContent(text);
         try {
-            commentServcie.pushComment(comments);
+            commentService.pushComment(comments);
             logger.info("发布评论成功，对应文章id: {}", aid);
             return ArticleResponseData.ok();
         } catch (Exception e) {
@@ -57,11 +57,11 @@ public class CommentController {
         }
     }
 
-    //查询评论
+    //分页查询所有评论根据文章id，时间，文章标题
     @Operation(summary = "分页查询评论")
     @PostMapping("/comments/getByid")
-    public String getCommentById(HttpServletRequest request, @RequestParam Integer aid, @RequestParam Integer page, @RequestParam Integer count) {
-        PageInfo<Comment> comments = commentServcie.getComments(aid, page, count);
+    public String getCommentById(@RequestParam Integer aid, @RequestParam Integer page, @RequestParam Integer count) {
+        PageInfo<Comment> comments = commentService.getComments(aid, page, count);
         return comments.toString();
     }
 
@@ -69,7 +69,7 @@ public class CommentController {
     @Operation(summary = "删除评论")
     @PostMapping("/comments/delete")
     public String deleteCommentById(HttpServletRequest request, @RequestParam Integer id) {
-        commentServcie.deleteCommentWithId(id);
+        commentService.deleteCommentWithId(id);
         return "删除成功";
     }
 }

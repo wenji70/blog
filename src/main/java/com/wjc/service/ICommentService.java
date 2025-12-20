@@ -14,4 +14,5 @@ public interface ICommentService {
     public void deleteCommentWithId(Integer aid);
 
    public void updateComment(Comment newcomment);
+
 }
