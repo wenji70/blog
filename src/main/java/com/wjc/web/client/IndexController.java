@@ -2,8 +2,10 @@ package com.wjc.web.client;
 
 import com.github.pagehelper.PageInfo;
 import com.wjc.model.domain.Article;
+import com.wjc.model.domain.Categories;
 import com.wjc.model.domain.Comment;
 import com.wjc.service.IArticleService;
+import com.wjc.service.ICategoriesService;
 import com.wjc.service.ICommentService;
 import com.wjc.service.ISiteService;
 import com.wjc.service.impl.ArticleServiceImpl;
@@ -34,6 +36,8 @@ public class IndexController {
     private ISiteService iSiteService;
     @Autowired
     ICommentService commentService;
+    @Autowired
+    private ICategoriesService iCategoriesService;
 
     //    跳转首页
     @GetMapping(value = "/")
@@ -54,14 +58,17 @@ public class IndexController {
         // 获取文章热度统计信息
         List<Article> articleList = iArticleService.getHeatArticles();
         request.setAttribute("articleList", articleList);
+        // 获取所有分类，用于页面显示分类名称
+        List<Categories> categoriesList = iCategoriesService.getAllCategories();
+        request.setAttribute("categoriesList", categoriesList);
         return "client/index";
     }
 
     //根据id查询文章
     @Operation(summary = "根据id查询文章")
     @GetMapping(value = "/article/{id}")
-    public String getArticleById(@PathVariable("id") Integer id, HttpServletRequest
-            request) {
+    public String getArticleById(@PathVariable("id") Integer id,
+                                 HttpServletRequest request) {
         Article article = iArticleService.selectArticleWithId(id);
         if(article!=null){
             // 查询封装评论相关数据

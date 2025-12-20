@@ -19,9 +19,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.Map;
 
 @Api(tags = "评论接口")
 @RestController
+@RequestMapping("/comments")
 public class CommentController {
     private static final Logger logger =
             LoggerFactory.getLogger(CommentController.class);
@@ -71,4 +73,15 @@ public class CommentController {
         commentService.deleteCommentWithId(id);
         return "删除成功";
     }
+    //更新评论
+    /*@Operation(summary = "更新评论")
+    @PostMapping("/Comment/update")
+    public String updateCommentById(HttpServletRequest request,@RequestParam Integer id, @RequestParam Integer aid, @RequestParam String content) {
+        Comment comment = new Comment();
+        comment.setId(id);
+        comment.setContent(content);
+        comment.setArticleId(aid);
+        commentServiceimpl.updateComment(comment);
+        return "更新成功";
+    }*/
 }

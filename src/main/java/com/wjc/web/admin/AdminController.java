@@ -4,8 +4,10 @@ import com.github.pagehelper.PageInfo;
 import com.wjc.model.ResponseData.ArticleResponseData;
 import com.wjc.model.ResponseData.StaticticsBo;
 import com.wjc.model.domain.Article;
+import com.wjc.model.domain.Categories;
 import com.wjc.model.domain.Comment;
 import com.wjc.service.IArticleService;
+import com.wjc.service.ICategoriesService;
 import com.wjc.service.ISiteService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,6 +30,8 @@ public class AdminController {
     IArticleService iArticleService;
     @Autowired
     ISiteService iSiteService;
+    @Autowired
+    ICategoriesService iCategoriesService;
 
     //添加文章
     @Operation(summary = "添加文章")
@@ -73,7 +77,10 @@ public class AdminController {
 
     // 向文章发表页面跳转
     @GetMapping(value = "/article/toEditPage")
-    public String newArticle() {
+    public String newArticle(HttpServletRequest request) {
+        // 获取所有分类
+        List<Categories> categoriesList = iCategoriesService.getAllCategories();
+        request.setAttribute("categoriesList", categoriesList);
         return "back/article_edit";
     }
 
@@ -81,9 +88,14 @@ public class AdminController {
     @PostMapping(value = "/article/publish")
     @ResponseBody
     public ArticleResponseData publishArticle(Article article) {
-        if (StringUtils.isBlank(article.getCategories())) {
-            article.setCategories("默认分类");
+        // 处理空分类，设置为第一个分类
+        if (article.getCategories() == null || article.getCategories() == 0) {
+            List<Categories> categoriesList = iCategoriesService.getAllCategories();
+            if (categoriesList != null && !categoriesList.isEmpty()) {
+                article.setCategories(categoriesList.get(0).getId());
+            }
         }
+
         try {
             iArticleService.publish(article);
             log.info("文章发布成功");
@@ -102,6 +114,9 @@ public class AdminController {
         PageInfo<Article> pageInfo = iArticleService.selectArticleWithPage(page,
                 count);
         request.setAttribute("articles", pageInfo);
+        // 获取所有分类，用于页面显示分类名称
+        List<Categories> categoriesList = iCategoriesService.getAllCategories();
+        request.setAttribute("categoriesList", categoriesList);
         return "back/article_list";
     }
 
@@ -112,6 +127,9 @@ public class AdminController {
         Article article = iArticleService.selectArticleWithId(Integer.parseInt(id));
         request.setAttribute("contents", article);
         request.setAttribute("categories", article.getCategories());
+        // 获取所有分类
+        List<Categories> categoriesList = iCategoriesService.getAllCategories();
+        request.setAttribute("categoriesList", categoriesList);
         return "back/article_edit";
 
     }
@@ -121,6 +139,13 @@ public class AdminController {
     @ResponseBody
     public ArticleResponseData modifyArticle(Article article) {
         try {
+            // 处理空分类，设置为第一个分类
+            if (article.getCategories() == null || article.getCategories() == 0) {
+                List<Categories> categoriesList = iCategoriesService.getAllCategories();
+                if (categoriesList != null && !categoriesList.isEmpty()) {
+                    article.setCategories(categoriesList.get(0).getId());
+                }
+            }
             iArticleService.updateArticleWithId(article);
             log.info("文章更新成功");
             return ArticleResponseData.ok();

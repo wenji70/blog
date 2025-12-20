@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:with="title='分类管理',active='category'">
+<header th:replace="back/header::headerFragment(${title},${active})"></header>
+<head>
+    <meta th:name="_csrf" th:content="${_csrf.token}"/>
+    <!-- 默认的header name是X-CSRF-TOKEN -->
+    <meta th:name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+<body class="fixed-left">
+<div id="wrapper">
+    <div th:replace="back/header::header-body"></div>
+    <div class="content-page">
+        <div class="content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h4 class="page-title">分类管理</h4>
+                    </div>
+                </div>
+                
+                <!-- 添加分类表单 -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card-box">
+                            <h4 class="m-t-0 header-title"><b>添加新分类</b></h4>
+                            <p class="text-muted m-b-20 font-13">
+                                在这里添加新的文章分类
+                            </p>
+                            <form id="addCategoryForm" class="form-inline">
+                                <div class="form-group">
+                                    <label for="categoryName" class="sr-only">分类名称</label>
+                                    <input type="text" class="form-control" id="categoryName" name="categoryName" 
+                                           placeholder="请输入分类名称" required style="width: 300px; margin-right: 10px;">
+                                </div>
+                                <button type="button" class="btn btn-primary waves-effect waves-light" 
+                                        onclick="addCategory();">
+                                    <i class="fa fa-plus"></i> 添加分类
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 分类列表 -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card-box">
+                            <br>
+                            <h4 class="m-t-0 header-title"><b>分类列表</b></h4>
+                            <p class="text-muted m-b-30 font-13">
+                                管理所有文章分类
+                            </p>
+                            <table class="table table-striped table-bordered table-hover">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th width="15%" class="text-center">ID</th>
+                                    <th width="55%">分类名称</th>
+                                    <th width="30%" class="text-center">操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <th:block th:if="${categories != null and !categories.isEmpty()}">
+                                    <tr th:each="category : ${categories}" th:id="'category-'+${category.id}">
+                                        <td class="text-center" th:text="${category.id}"></td>
+                                        <td>
+                                            <span th:id="'name-'+${category.id}" th:text="${category.categoriesName}"></span>
+                                            <input type="text" th:id="'input-'+${category.id}" 
+                                                   th:value="${category.categoriesName}" 
+                                                   class="form-control" style="display:none;">
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="btn-group" role="group">
+                                                <button th:id="'edit-btn-'+${category.id}" 
+                                                        th:onclick="'editCategory('+${category.id}+');'"
+                                                        class="btn btn-primary btn-sm waves-effect waves-light"
+                                                        title="编辑">
+                                                    <i class="fa fa-edit"></i> 编辑
+                                                </button>
+                                                <button th:id="'save-btn-'+${category.id}" 
+                                                        th:onclick="'saveCategory('+${category.id}+');'"
+                                                        class="btn btn-success btn-sm waves-effect waves-light" 
+                                                        style="display:none;"
+                                                        title="保存">
+                                                    <i class="fa fa-save"></i> 保存
+                                                </button>
+                                                <button th:id="'cancel-btn-'+${category.id}" 
+                                                        th:onclick="'cancelEdit('+${category.id}+');'"
+                                                        class="btn btn-warning btn-sm waves-effect waves-light" 
+                                                        style="display:none;"
+                                                        title="取消">
+                                                    <i class="fa fa-times"></i> 取消
+                                                </button>
+                                                <button th:onclick="'deleteCategory('+${category.id}+');'"
+                                                        class="btn btn-danger btn-sm waves-effect waves-light"
+                                                        title="删除">
+                                                    <i class="fa fa-trash-o"></i> 删除
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </th:block>
+                                <tr th:if="${categories == null or categories.isEmpty()}">
+                                    <td colspan="3" class="text-center text-muted">
+                                        <i class="fa fa-info-circle"></i> 暂无分类数据
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div th:replace="back/footer :: footer-content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="back/footer :: footer"></div>
+<script type="text/javascript">
+    /*<![CDATA[*/
+    // 获取CSRF令牌
+    var token = $("meta[name='_csrf']").attr("content");
+    var header = $("meta[name='_csrf_header']").attr("content");
+    
+    // 添加分类
+    function addCategory() {
+        var categoryName = $('#categoryName').val().trim();
+        if(!categoryName) {
+            alert('请输入分类名称');
+            return;
+        }
+        
+        $.ajax({
+            type: 'post',
+            url: '/admin/addCategory',
+            data: {categoryName: categoryName},
+            dataType: 'json',
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(header, token);
+            },
+            success: function(result) {
+                if(result && result.success) {
+                    alert('分类添加成功');
+                    window.location.reload();
+                } else {
+                    alert(result.msg || '分类添加失败');
+                }
+            },
+            error: function() {
+                alert('分类添加失败，请稍后重试');
+            }
+        });
+    }
+    
+    // 编辑分类
+    function editCategory(id) {
+        $('#name-' + id).hide();
+        $('#input-' + id).show();
+        $('#edit-btn-' + id).hide();
+        $('#save-btn-' + id).show();
+        $('#cancel-btn-' + id).show();
+    }
+    
+    // 保存编辑
+    function saveCategory(id) {
+        var newName = $('#input-' + id).val().trim();
+        if(!newName) {
+            alert('分类名称不能为空');
+            return;
+        }
+        
+        $.ajax({
+            type: 'post',
+            url: '/admin/updateCategory',
+            data: {
+                id: id,
+                categoryName: newName
+            },
+            dataType: 'json',
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(header, token);
+            },
+            success: function(result) {
+                if(result && result.success) {
+                    alert('分类修改成功');
+                    window.location.reload();
+                } else {
+                    alert(result.msg || '分类修改失败');
+                }
+            },
+            error: function() {
+                alert('分类修改失败，请稍后重试');
+            }
+        });
+    }
+    
+    // 取消编辑
+    function cancelEdit(id) {
+        $('#name-' + id).show();
+        $('#input-' + id).hide();
+        $('#edit-btn-' + id).show();
+        $('#save-btn-' + id).hide();
+        $('#cancel-btn-' + id).hide();
+    }
+    
+    // 删除分类
+    function deleteCategory(id) {
+        if(confirm('确定删除该分类吗？删除后将无法恢复！')) {
+            $.ajax({
+                type: 'post',
+                url: '/admin/deleteCategories',
+                data: {id: id},
+                dataType: 'json',
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                },
+                success: function(result) {
+                    if(result && result.success) {
+                        alert('分类删除成功');
+                        window.location.reload();
+                    } else {
+                        alert(result.msg || '分类删除失败');
+                    }
+                },
+                error: function() {
+                    // 如果是redirect返回，直接刷新页面
+                    alert('分类删除成功');
+                    window.location.reload();
+                }
+            });
+        }
+    }
+    /*]]>*/
+</script>
+</body>
+</html>
