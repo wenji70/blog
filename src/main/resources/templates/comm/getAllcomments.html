@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:with="title='评论管理',active='comments'">
+<header th:replace="back/header::headerFragment(${title},${active})"></header>
+<head>
+    <meta th:name="_csrf" th:content="${_csrf.token}"/>
+    <meta th:name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+<body class="fixed-left">
+<div id="wrapper">
+    <div th:replace="back/header::header-body"></div>
+    <div class="content-page">
+        <div class="content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h4 class="page-title">评论管理</h4>
+                    </div>
+                    
+                    <!-- 搜索筛选区域 -->
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <form id="searchForm" class="form-inline">
+                                    <div class="form-group">
+                                        <label>文章ID：</label>
+                                        <input type="text" id="aid" name="aid" class="form-control" placeholder="可选" th:value="${param.aid}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>开始时间：</label>
+                                        <input type="date" id="startTime" name="startTime" class="form-control" th:value="${param.startTime}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>结束时间：</label>
+                                        <input type="date" id="endTime" name="endTime" class="form-control" th:value="${param.endTime}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>每页条数：</label>
+                                        <input type="number" id="pageSize" name="pageSize" class="form-control" th:value="${param.pageSize != null ? param.pageSize : 10}" style="width:80px;">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>页码：</label>
+                                        <input type="number" id="pageNum" name="pageNum" class="form-control" th:value="${param.pageNum != null ? param.pageNum : 1}" style="width:80px;">
+                                    </div>
+                                    <button type="button" onclick="searchComments()" class="btn btn-primary">查询</button>
+                                    <button type="button" onclick="resetForm()" class="btn btn-default">重置</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 评论列表 -->
+                    <div class="col-md-12">
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                            <tr>
+                                <th>评论ID</th>
+                                <th>文章ID</th>
+                                <th width="25%">评论内容</th>
+                                <th>评论作者</th>
+                                <th>评论时间</th>
+                                <th>IP地址</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <th:block th:if="${comments != null and comments.list != null and comments.list.size() > 0}">
+                                <th:block th:each="comment : ${comments.list}">
+                                    <tr th:id="${comment.id}">
+                                        <td><th:block th:text="${comment.id}"/></td>
+                                        <td>
+                                            <a th:href="@{'/article/'+${comment.articleId}}" target="_blank" th:text="${comment.articleId}"></a>
+                                        </td>
+                                        <td>
+                                            <div style="max-width:300px;word-wrap:break-word;" th:utext="${commons.article(comment.content)}"></div>
+                                        </td>
+                                        <td><th:block th:text="${comment.author}"/></td>
+                                        <td><th:block th:text="${commons.dateFormat(comment.created)}"/></td>
+                                        <td><th:block th:text="${comment.ip}"/></td>
+                                        <td>
+                                            <span th:if="${comment.status == 'approved'}" class="label label-success">已审核</span>
+                                            <span th:unless="${comment.status == 'approved'}" class="label label-warning" th:text="${comment.status}"></span>
+                                        </td>
+                                        <td>
+                                            <a th:href="@{'/article/'+${comment.articleId}+'#comments'}" target="_blank"
+                                               class="btn btn-info btn-sm waves-effect waves-light m-b-5">
+                                               <i class="fa fa-eye"></i> <span>查看</span></a>
+                                            <a href="javascript:void(0)" th:onclick="'delComment('+${comment.id}+');'"
+                                               class="btn btn-danger btn-sm waves-effect waves-light m-b-5">
+                                                <i class="fa fa-trash-o"></i> <span>删除</span></a>
+                                        </td>
+                                    </tr>
+                                </th:block>
+                            </th:block>
+                            <tr th:if="${comments == null or comments.list == null or comments.list.size() == 0}">
+                                <td colspan="8" class="text-center">
+                                    <div class="alert alert-warning" style="margin:20px;">
+                                        暂无评论数据，请输入查询条件后点击查询按钮
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        
+                        <!-- 分页信息 -->
+                        <th:block th:if="${comments != null and comments.list != null and comments.list.size() > 0}">
+                            <div class="text-center">
+                                <ul class="pagination">
+                                    <li th:class="${comments.isFirstPage} ? 'disabled' : ''">
+                                        <a href="javascript:void(0)" th:onclick="'goToPage('+${comments.prePage}+')'" th:if="${!comments.isFirstPage}">上一页</a>
+                                        <span th:if="${comments.isFirstPage}">上一页</span>
+                                    </li>
+                                    <th:block th:each="num : ${comments.navigatepageNums}">
+                                        <li th:class="${num == comments.pageNum} ? 'active' : ''">
+                                            <a href="javascript:void(0)" th:onclick="'goToPage('+${num}+')'" th:text="${num}"></a>
+                                        </li>
+                                    </th:block>
+                                    <li th:class="${comments.isLastPage} ? 'disabled' : ''">
+                                        <a href="javascript:void(0)" th:onclick="'goToPage('+${comments.nextPage}+')'" th:if="${!comments.isLastPage}">下一页</a>
+                                        <span th:if="${comments.isLastPage}">下一页</span>
+                                    </li>
+                                </ul>
+                                <div>
+                                    共 <span th:text="${comments.total}"></span> 条记录，
+                                    当前第 <span th:text="${comments.pageNum}"></span>/<span th:text="${comments.pages}"></span> 页
+                                </div>
+                            </div>
+                        </th:block>
+                    </div>
+                </div>
+                <div th:replace="back/footer :: footer-content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="back/footer :: footer"></div>
+<script type="text/javascript">
+    /*<![CDATA[*/
+    function searchComments() {
+        var aid = document.getElementById('aid').value;
+        var startTime = document.getElementById('startTime').value;
+        var endTime = document.getElementById('endTime').value;
+        var pageSize = document.getElementById('pageSize').value || 10;
+        var pageNum = document.getElementById('pageNum').value || 1;
+        
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+        
+        $.ajax({
+            type: 'Get',
+            url: '/comments/getAll',
+            data: {
+                aid: aid,
+                startTime: startTime,
+                endTime: endTime,
+                pageSize: pageSize,
+                pageNum: pageNum
+            },
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(header, token);
+            },
+            success: function(response) {
+                // 重新加载页面以显示结果
+                window.location.href = '/comments/getAll?aid=' + aid + 
+                    '&startTime=' + startTime + 
+                    '&endTime=' + endTime + 
+                    '&pageSize=' + pageSize + 
+                    '&pageNum=' + pageNum;
+            },
+            error: function(xhr, status, error) {
+                alert('查询失败: ' + error);
+            }
+        });
+    }
+    
+    function goToPage(pageNum) {
+        document.getElementById('pageNum').value = pageNum;
+        searchComments();
+    }
+    
+    function resetForm() {
+        document.getElementById('searchForm').reset();
+        document.getElementById('pageSize').value = 10;
+        document.getElementById('pageNum').value = 1;
+    }
+    
+    function delComment(id) {
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+        if(confirm('确定删除该评论吗?')){
+            $.ajax({
+                type:'post',
+                url : '/comments/delete',
+                data: {id:id},
+                beforeSend : function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                },
+                success: function (result) {
+                    alert("删除成功");
+                    window.location.reload();
+                },
+                error: function(xhr, status, error) {
+                    alert('删除失败: ' + error);
+                }
+            });
+        }
+    }
+    /*]]>*/
+</script>
+</body>
+</html>

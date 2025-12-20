@@ -12,4 +12,18 @@
         </set>
         where id = #{id} and article_id = #{articleId}
     </update>
+    <select id="getAllComments" resultType="com.wjc.model.domain.Comment">
+        SELECT * FROM t_comment
+        <where>
+            <if test="aid != null and aid > 0">
+                article_id = #{aid}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                AND created &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                AND created &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
 </mapper>

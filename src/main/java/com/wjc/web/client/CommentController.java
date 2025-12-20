@@ -57,8 +57,7 @@ public class CommentController {
         }
     }
 
-    //分页查询所有评论根据文章id，时间，文章标题
-    @Operation(summary = "分页查询评论")
+    @Operation(summary = "查询评论")
     @PostMapping("/comments/getByid")
     public String getCommentById(@RequestParam Integer aid, @RequestParam Integer page, @RequestParam Integer count) {
         PageInfo<Comment> comments = commentService.getComments(aid, page, count);
@@ -68,7 +67,7 @@ public class CommentController {
     //删除评论
     @Operation(summary = "删除评论")
     @PostMapping("/comments/delete")
-    public String deleteCommentById(HttpServletRequest request, @RequestParam Integer id) {
+    public String deleteCommentById(@RequestParam Integer id) {
         commentService.deleteCommentWithId(id);
         return "删除成功";
     }
