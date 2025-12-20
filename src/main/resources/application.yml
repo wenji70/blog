@@ -32,3 +32,5 @@ mybatis:
 COOKIE:
   VALIDITY: 1800
 #    url: jdbc:mysql://localhost:3306/bolg_system?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8&connectionCollation=utf8mb4_unicode_ci
+#192.168.218.232 ipv4
+# ping 192.168.159.129 3306
