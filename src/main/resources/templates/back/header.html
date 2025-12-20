@@ -78,9 +78,10 @@
                 </li>
                 <!-- 以下功能尚未实现 -->
                 <li th:class="${active}=='comments'?'active':''">
-                    <a th:class="${active}=='comments'?'waves-effect active':'waves-effect'">
+                    <a th:href="@{/comments/getAll}" th:class="${active}=='comments'?'waves-effect active':'waves-effect'">
                         <i class="fa fa-comments" aria-hidden="true"></i><span> 评论管理 </span></a>
                 </li>
+
                 <li th:class="${active}=='category'?'active':''">
                     <a th:href="@{/admin/categories}"
                        th:class="${active}=='category'?'waves-effect active':'waves-effect'">
