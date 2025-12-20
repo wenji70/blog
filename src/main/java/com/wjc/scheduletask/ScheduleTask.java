@@ -22,9 +22,9 @@ public class ScheduleTask {
     /**
      * 定时邮件发送任务，每月1日中午12点整发送邮件
      */
-//    @Scheduled(cron = "0 0 12 1 * ?")
-    @Scheduled(cron = "0 */1 * * * ?")
-    // @Scheduled(cron = "0 */3 * * * ? ")
+    @Scheduled(cron = "0 0 12 1 * ?")
+//    @Scheduled(cron = "0 */1 * *  * ?")
+//     @Scheduled(cron = "0 */3 * * * ? ")
     public void sendEmail(){
         // 定制邮件内容
         long totalVisit = statisticMapper.getTotalVisit();

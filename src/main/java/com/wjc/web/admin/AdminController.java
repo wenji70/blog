@@ -143,16 +143,4 @@ public class AdminController {
             return ArticleResponseData.fail();
         }
     }
-
-
-    //根据id查询文章
-   /* @Operation(summary = "根据id查询文章")
-    @GetMapping(value = "/article/{id}")
-    public String getArticleById(@PathVariable("id") Integer id, HttpServletRequest
-            request){
-        Article article = iArticleService.selectArticleWithId(id);
-        return  article.toString();
-    }*/
-
-
 }

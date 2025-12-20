@@ -27,16 +27,17 @@ public class CommentController {
             LoggerFactory.getLogger(CommentController.class);
     @Autowired
     private ICommentService commentServcie;
+
     // 发表评论操作
     @PostMapping(value = "/comments/publish")
     @ResponseBody
-    public ArticleResponseData publishComment(HttpServletRequest request,@RequestParam
+    public ArticleResponseData publishComment(HttpServletRequest request, @RequestParam
     Integer aid, @RequestParam String text) {
 // 去除js脚本
         text = MyUtils.cleanXSS(text);
         text = EmojiParser.parseToAliases(text);
 // 获取当前登录用户
-        org.springframework.security.core.userdetails.User securityUser = 
+        org.springframework.security.core.userdetails.User securityUser =
                 (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = securityUser.getUsername();
 // 封装评论信息
@@ -48,13 +49,14 @@ public class CommentController {
         comments.setContent(text);
         try {
             commentServcie.pushComment(comments);
-            logger.info("发布评论成功，对应文章id: "+aid);
+            logger.info("发布评论成功，对应文章id: {}", aid);
             return ArticleResponseData.ok();
         } catch (Exception e) {
-            logger.error("发布评论失败，对应文章id: "+aid +";错误描述: "+e.getMessage());
+            logger.error("发布评论失败，对应文章id: {};错误描述: {}", aid, e.getMessage());
             return ArticleResponseData.fail();
         }
     }
+
     //查询评论
     @Operation(summary = "分页查询评论")
     @PostMapping("/comments/getByid")
@@ -62,6 +64,7 @@ public class CommentController {
         PageInfo<Comment> comments = commentServcie.getComments(aid, page, count);
         return comments.toString();
     }
+
     //删除评论
     @Operation(summary = "删除评论")
     @PostMapping("/comments/delete")
@@ -69,15 +72,4 @@ public class CommentController {
         commentServcie.deleteCommentWithId(id);
         return "删除成功";
     }
-    //更新评论
-    /*@Operation(summary = "更新评论")
-    @PostMapping("/Comment/update")
-    public String updateCommentById(HttpServletRequest request,@RequestParam Integer id, @RequestParam Integer aid, @RequestParam String content) {
-        Comment comment = new Comment();
-        comment.setId(id);
-        comment.setContent(content);
-        comment.setArticleId(aid);
-        commentServiceimpl.updateComment(comment);
-        return "更新成功";
-    }*/
 }
