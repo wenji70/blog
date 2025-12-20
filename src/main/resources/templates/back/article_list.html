@@ -35,7 +35,18 @@
                                     </td>
                                     <td><th:block th:text="${commons.dateFormat(article.created)}"/></td>
                                     <td><th:block th:text="${article.hits}"/></td>
-                                    <td><th:block th:text="${article.categories}"/></td>
+                                    <td>
+                                        <th:block th:if="${article.categories != null and article.categories != 0}">
+                                            <th:block th:each="category : ${categoriesList}">
+                                                <span th:if="${article.categories == category.id}" 
+                                                      class="badge badge-info" 
+                                                      th:text="${category.categoriesName}">
+                                                </span>
+                                            </th:block>
+                                        </th:block>
+                                        <span th:if="${article.categories == null || article.categories == 0}" 
+                                              class="badge badge-secondary">未分类</span>
+                                    </td>
                                     <td>
                                         <a th:href="@{'/admin/article/'+${article.id}}"
                                            class="btn btn-primary btn-sm waves-effect waves-light m-b-5">

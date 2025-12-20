@@ -4,9 +4,11 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.vdurmont.emoji.EmojiParser;
 import com.wjc.dao.ArticleMapper;
+import com.wjc.dao.CategoriesMapper;
 import com.wjc.dao.CommentMapper;
 import com.wjc.dao.StatisticMapper;
 import com.wjc.model.domain.Article;
+import com.wjc.model.domain.Categories;
 import com.wjc.model.domain.Statistic;
 import com.wjc.service.IArticleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,20 +29,30 @@ public class ArticleServiceImpl implements IArticleService {
     @Autowired
     private CommentMapper commentMapper;
     @Autowired
+    private CategoriesMapper categoriesMapper;
+    @Autowired
     private RedisTemplate redisTemplate;
 
     // 根据id查询单个文章详情
     @Override
     public Article selectArticleWithId(Integer id) {
         Article article = null;
-        //获取key
-        Object o = redisTemplate.opsForValue().get("article_" + id);
-        if(o!=null){
-            article=(Article)o;
-        }else{
+        // 获取key
+        try {
+            Object o = redisTemplate.opsForValue().get("article_" + id);
+            if (o != null) {
+                article = (Article) o;
+            }
+        } catch (Exception e) {
+            // 反序列化失败，删除旧缓存
+            redisTemplate.delete("article_" + id);
+        }
+        
+        // 如果缓存中没有或反序列化失败，从数据库查询
+        if (article == null) {
             article = articleMapper.selectArticleWithId(id);
-            if(article!=null){
-                redisTemplate.opsForValue().set("article_" + id,article);
+            if (article != null) {
+                redisTemplate.opsForValue().set("article_" + id, article);
             }
         }
         return article;
@@ -53,7 +65,7 @@ public class ArticleServiceImpl implements IArticleService {
         // 封装文章统计数据
         for (int i = 0; i < articleList.size(); i++) {
             Article article = articleList.get(i);
-            //查询文章的点击量和评论量
+            // 查询文章的点击量和评论量
             Statistic statistic =
                     statisticMapper.selectStatisticWithArticleId(article.getId());
             article.setHits(statistic.getHits());

@@ -13,7 +13,14 @@
                 </div>
                 <div class="am-u-lg-6 am-u-md-12 am-u-sm-12 blog-entry-text">
                     <!-- 文章分类 -->
-                    <span class="blog-color"style="font-size: 15px;"><a>默认分类</a></span>
+                    <span class="blog-color" style="font-size: 15px;">
+                        <th:block th:if="${article.categories != null and article.categories > 0}">
+                            <th:block th:each="cat : ${categoriesList}">
+                                <a th:if="${cat.id == article.categories}" th:text="${cat.categoriesName}"></a>
+                            </th:block>
+                        </th:block>
+                        <a th:unless="${article.categories != null and article.categories > 0}">未分类</a>
+                    </span>
                     <span>&nbsp;&nbsp;&nbsp;</span>
                     <!-- 发布时间 -->
                     <span style="font-size: 15px;" th:text="'发布于 '+ ${commons.dateFormat(article.created)}" />
