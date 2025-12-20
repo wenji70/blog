@@ -11,8 +11,9 @@ public interface ICommentService {
     public void pushComment(Comment comment);
 
     // 删除评论
-    public void deleteCommentWithId(Integer aid);
+    public void deleteCommentWithId(Integer id);
 
    public void updateComment(Comment newcomment);
 
+    PageInfo<Comment> getAllComments(Integer aid, String startTime,String endTime,Integer pageSize,Integer pageNum);
 }

@@ -31,8 +31,7 @@ public class CommentServiceImpl implements ICommentService {
     public PageInfo<Comment> getComments(Integer aid, int page, int count) {
         PageHelper.startPage(page, count);
         List<Comment> commentList = commentMapper.selectCommentWithPage(aid);
-        PageInfo<Comment> commentInfo = new PageInfo<>(commentList);
-        return commentInfo;
+        return new PageInfo<>(commentList);
     }
 
     // 用户发表评论
@@ -49,13 +48,20 @@ public class CommentServiceImpl implements ICommentService {
     }
 
     @Override
-    public void deleteCommentWithId(Integer aid) {
+    public void deleteCommentWithId(Integer id) {
+        // 先查询评论，获取文章ID
+        Comment comment = commentMapper.selectCommentById(id);
+        if (comment == null) {
+            return; // 评论不存在，直接返回
+        }
         // 删除一条评论
-        commentMapper.deleteCommentWithId(aid);
+        commentMapper.deleteCommentWithId(id);
         // 更新文章评论数据，修改统计表中的数据
-        Statistic statistic = statisticMapper.selectStatisticWithArticleId(aid);
-        statistic.setCommentsNum(statistic.getCommentsNum() - 1);
-        statisticMapper.updateArticleCommentsWithId(statistic);
+        Statistic statistic = statisticMapper.selectStatisticWithArticleId(comment.getArticleId());
+        if (statistic != null) {
+            statistic.setCommentsNum(statistic.getCommentsNum() - 1);
+            statisticMapper.updateArticleCommentsWithId(statistic);
+        }
     }
 
     @Override
@@ -63,6 +69,13 @@ public class CommentServiceImpl implements ICommentService {
 
         newcomment.setCreated(new Date());
         commentMapper.updateComment(newcomment);
+    }
+
+    @Override
+    public PageInfo<Comment> getAllComments(Integer aid, String startTime, String endTime, Integer pageSize, Integer pageNum) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<Comment> list = commentMapper.getAllComments(aid, startTime,endTime);
+        return new PageInfo<>(list);
     }
 
 }

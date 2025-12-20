@@ -4,6 +4,7 @@ import com.github.pagehelper.PageInfo;
 import com.wjc.model.domain.Article;
 import com.wjc.model.domain.Comment;
 import com.wjc.service.IArticleService;
+import com.wjc.service.ICommentService;
 import com.wjc.service.ISiteService;
 import com.wjc.service.impl.ArticleServiceImpl;
 import com.wjc.service.impl.CommentServiceImpl;
@@ -13,10 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -34,6 +32,8 @@ public class IndexController {
     private Commons commons;
     @Autowired
     private ISiteService iSiteService;
+    @Autowired
+    ICommentService commentService;
 
     //    跳转首页
     @GetMapping(value = "/")
@@ -87,6 +87,20 @@ public class IndexController {
             request.setAttribute("cp", cp);
             request.setAttribute("comments", comments);
         }
+    }
+    //分页查询所有评论根据文章id，开始时间，结束时间，pageSize（默认10），pageNum
+    @Operation(summary = "分页查询所有评论")
+    @GetMapping("/comments/getAll")
+    public String getAllComments(HttpServletRequest request,
+                                 @RequestParam(required = false) Integer aid,
+                                 @RequestParam(required = false) String startTime,
+                                 @RequestParam(required = false) String endTime,
+                                 @RequestParam(defaultValue = "10") Integer pageSize,
+                                 @RequestParam(defaultValue = "1") Integer pageNum) {
+        PageInfo<Comment> comments = commentService.getAllComments(aid, startTime, endTime, pageSize, pageNum);
+        // 3. 将评论数据存入请求域（核心！页面通过 "comments" 这个key获取数据）
+        request.setAttribute("comments", comments);
+        return "comm/getAllcomments";
     }
 
 
