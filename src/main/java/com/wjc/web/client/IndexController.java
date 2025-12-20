@@ -23,7 +23,6 @@ import java.util.List;
 
 
 @Slf4j
-//@Controller
 @Controller
 public class IndexController {
     @Autowired
@@ -60,8 +59,8 @@ public class IndexController {
     //根据id查询文章
     @Operation(summary = "根据id查询文章")
     @GetMapping(value = "/article/{id}")
-    public String getArticleById(@PathVariable("id") Integer id, HttpServletRequest
-            request) {
+    public String getArticleById(@PathVariable("id") Integer id,
+                                 HttpServletRequest request) {
         Article article = iArticleService.selectArticleWithId(id);
         if(article!=null){
             // 查询封装评论相关数据

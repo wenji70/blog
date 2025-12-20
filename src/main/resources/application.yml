@@ -5,6 +5,7 @@ spring:
     active: jdbc,redis
   datasource:
     url: jdbc:mysql://localhost:3306/bolg_system?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8&connectionCollation=utf8mb4_unicode_ci&allowPublicKeyRetrieval=true
+#    url: jdbc:mysql://192.168.218.232:3306/bolg_system?useSSL=false&serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true
     username: root
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
