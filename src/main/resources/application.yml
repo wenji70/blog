@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: bolg_system
+  profiles:
+    active: jdbc,redis
+  datasource:
+    url: jdbc:mysql://localhost:3306/bolg_system?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8&connectionCollation=utf8mb4_unicode_ci
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  messages:
+    basename: i18n/logo
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+COOKIE:
+  VALIDITY: 1800
