@@ -179,9 +179,12 @@
     }
     
     function resetForm() {
+        // 清空表单
         document.getElementById('searchForm').reset();
         document.getElementById('pageSize').value = 10;
         document.getElementById('pageNum').value = 1;
+        // 重定向到不带查询参数的页面，清空查询结果
+        window.location.href = '/comments/getAll';
     }
     
     function delComment(id) {

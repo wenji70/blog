@@ -13,7 +13,6 @@ public interface ICommentService {
     // 删除评论
     public void deleteCommentWithId(Integer id);
 
-   public void updateComment(Comment newcomment);
-
-    PageInfo<Comment> getAllComments(Integer aid, String startTime,String endTime,Integer pageSize,Integer pageNum);
+    PageInfo<Comment> getAllComments(Integer aid, String startTime,
+                                     String endTime,Integer pageSize,Integer pageNum);
 }

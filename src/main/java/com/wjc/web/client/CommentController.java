@@ -36,7 +36,8 @@ public class CommentController {
         text = EmojiParser.parseToAliases(text);
         // 获取当前登录用户
         org.springframework.security.core.userdetails.User securityUser =
-                (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                (org.springframework.security.core.userdetails.User) SecurityContextHolder
+                        .getContext().getAuthentication().getPrincipal();
         String username = securityUser.getUsername();
         // 封装评论信息
         Comment comments = new Comment();

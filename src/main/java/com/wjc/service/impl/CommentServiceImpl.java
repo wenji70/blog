@@ -7,14 +7,10 @@ import com.wjc.dao.CommentMapper;
 import com.wjc.dao.StatisticMapper;
 import com.wjc.model.domain.Comment;
 import com.wjc.model.domain.Statistic;
-import com.wjc.service.IArticleService;
 import com.wjc.service.ICommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -37,8 +33,6 @@ public class CommentServiceImpl implements ICommentService {
     // 用户发表评论
     @Override
     public void pushComment(Comment comment) {
-        //判断该文章是否允许评论
-//        Integer a = articleMapper.getAllow(comment.getArticleId());
         // 发表一条评论，保存到数据库中
         commentMapper.pushComment(comment);
         // 更新文章评论数据，修改统计表中的数据
@@ -65,14 +59,8 @@ public class CommentServiceImpl implements ICommentService {
     }
 
     @Override
-    public void updateComment(Comment newcomment) {
-
-        newcomment.setCreated(new Date());
-        commentMapper.updateComment(newcomment);
-    }
-
-    @Override
-    public PageInfo<Comment> getAllComments(Integer aid, String startTime, String endTime, Integer pageSize, Integer pageNum) {
+    public PageInfo<Comment> getAllComments(Integer aid, String startTime, String endTime,
+                                            Integer pageSize, Integer pageNum) {
         PageHelper.startPage(pageNum, pageSize);
         List<Comment> list = commentMapper.getAllComments(aid, startTime,endTime);
         return new PageInfo<>(list);
